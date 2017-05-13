@@ -1,0 +1,195 @@
+---
+layout:     post
+title:      "Retrofit2文件上传"
+subtitle:   "记录Retrofit2上传文件一些关键点"
+date:       2016-07-11 15:00
+author:     "Channing"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - Android
+    - Retrofit
+---
+
+## 前言
+
+使用Retrofit2已经有一段时间了，在使用时一直在感叹库的易用性和灵活性，一直想深入的研究下源码和机制，但是项目催得紧，深陷泥潭无法脱身。果然在多文件上传时被卡住了。（今天犯懒，明天就遭报应）研究半天终于跑通，特此记录。
+
+## Http MultiPart消息
+
+其实无论什么库，只要是发送Http请求，都得遵守Http协议，所以熟悉协议内容对理解库原理、调试是有很大帮助的。
+
+Http上传协议为MultiPart。下面是通过抓包获取的一次多文件+文本的上传消息，每行前面的行数是为了标注说明方便加上的，实际请求中没有。
+
+```
+1  POST http://host:8080/updata.action HTTP/1.1
+2  Content-Type: multipart/form-data; boundary=bec890b3-d76c-4986-803d-dc4b57ba2421
+3  Content-Length: 3046505
+4  Host: host:8080
+5  Connection: Keep-Alive
+6  Accept-Encoding: gzip
+7  User-Agent: okhttp/3.2.0
+8
+9  --bec890b3-d76c-4986-803d-dc4b57ba2421
+10 Content-Disposition: form-data; name="title"
+11 Content-Type: text/plain; charset=utf-8
+12 Content-Length: 15
+13
+14 多文件上传
+15 --bec890b3-d76c-4986-803d-dc4b57ba2421
+16 Content-Disposition: form-data; name="token"
+17 Content-Type: text/plain; charset=utf-8
+18 Content-Length: 32
+19
+20 登陆Token值
+21 --776becce-5bd0-41d3-aa73-d3cd3ca4209d
+22 Content-Disposition: form-data; name="imgUrls"; filename="0.jpg"
+23 Content-Type: image/*
+24 Content-Length: 168637
+25
+26 (文件字节，一堆乱码)@ h r   q   UY e<* ?  7C  Z 6...
+27 --776becce-5bd0-41d3-aa73-d3cd3ca4209d
+28 Content-Disposition: form-data; name="imgUrls"; filename="1.jpg"
+29 Content-Type: image/*
+30 Content-Length: 164004
+31
+32 (文件字节，一堆乱码)@ h r   q   UY e<* ?  7C  Z 6...
+33 --776becce-5bd0-41d3-aa73-d3cd3ca4209d
+34 Content-Disposition: form-data; name="imgUrls"; filename="2.jpg"
+35 Content-Type: image/*
+36 Content-Length: 167307
+37
+38 (文件字节，一堆乱码)@ h r   q   UY e<* ?  7C  Z 6...
+39 --776becce-5bd0-41d3-aa73-d3cd3ca4209d--
+```
+- line1：请求行
+- line2-line7：消息头
+- line2：定义请求类型及分隔符
+- line9-line39：消息正文
+- line9：分隔符，用于分割正文的各条数据
+- line39：结尾分隔符
+- line10：name定义服务端获取本条数据的key
+- line17：Content-Type定义本条数据类型为文本，charset定义编码为utf-8
+- line22：name定义Key，filename定义上传的文件名
+- line23：Content-Type定义本条数据类型为图片文件
+
+以上代码为一次多文件+文本的表单请求，Retrofit2基本将能封装的内容都封装了，我们需要做的就是通过MultiPartBody.Part或者MultiPartBody将文本及文件数据封装好并传到接口中。
+
+## Retrofit2实现上传请求
+
+上面说到Retrofit2封装请求消息是不完全正确的，因为Retrofit2使用动态代理将具体的请求分发给具体的http client去执行，一般使用Okhttp。
+
+### 定义上传接口
+
+```
+/**
+ * 注意1：必须使用{@code @POST}注解为post请求。
+ * 注意2：使用{@code @Multipart}注解方法的时候，只能使用{@code @Part}或者{@code @PartMap}
+ * 注解其参数。
+ * 本接口中将文本数据和文件数据分为了两个参数，是为了方便将构建{@link MultipartBody.Part}
+ * 的代码抽取到工具类中，你也可以合并成一个{@code @Part}参数。
+ *
+ * @param params 用于封装文本数据
+ * @param parts 用于封装文件数据
+ * @return BaseResp为服务器返回的基本Json数据的Model类
+ */
+@Multipart
+@POST(RequestApiPath.UPLOAD_WORK)
+Observable<BaseResp> requestUploadWork(@PartMap Map<String, RequestBody> params,
+                                       @Part List<MultipartBody.Part> parts);
+
+/**
+ * 注意1：必须使用{@code @POST}注解为post请求。
+ * 注意2：使用{@code @Body}注解参数，则不能使用{@code @Multipart}注解方法了
+ * 直接将所有的{@link MultipartBody.Part}合并到一个{@link MultipartBody}中。
+ */
+@POST(RequestApiPath.UPLOAD_WORK)
+Observable<BaseResp> requestUploadWork(@Body MultipartBody body);
+```
+
+### MultipartBody.Part/MultipartBody的封装
+
+```
+/**
+ * 将文件路径数组封装为{@link List<MultipartBody.Part>}
+ *
+ * @param key 对应请求正文中name的值。目前服务器给出的接口中，所有图片文件使用
+ * 同一个name值，实际情况中有可能需要多个
+ * @param filePaths 文件路径数组
+ * @param imageType 文件类型
+ */
+public static List<MultipartBody.Part> files2Parts(String key,
+                          String[] filePaths, MediaType imageType) {
+   List<MultipartBody.Part> parts = new ArrayList<>(filePaths.length);
+   for (String filePath : filePaths) {
+       File file = new File(filePath);
+       // 根据类型及File对象创建RequestBody（okhttp的类）
+       RequestBody requestBody = RequestBody.create(imageType, file);
+       // 将RequestBody封装成MultipartBody.Part类型（同样是okhttp的）
+       MultipartBody.Part part = MultipartBody.Part.
+               createFormData(key, file.getName(), requestBody);
+       // 添加进集合
+       parts.add(part);
+   }
+   return parts;
+}
+
+/**
+ * 其实也是将File封装成RequestBody，然后再封装成Part，
+ * 不同的是使用MultipartBody.Builder来构建MultipartBody
+ *
+ * @param key 同上
+ * @param filePaths 同上
+ * @param imageType 同上
+ */
+public static MultipartBody filesToMultipartBody(String key,
+                                                 String[] filePaths,
+                                                 MediaType imageType) {
+    MultipartBody.Builder builder = new MultipartBody.Builder();
+    for (String filePath : filePaths) {
+        File file = new File(filePath);
+        RequestBody requestBody = RequestBody.create(imageType, file);
+        builder.addFormDataPart(key, file.getName(), requestBody);
+    }
+    builder.setType(MultipartBody.FORM);
+    return builder.build();
+}
+```
+### 文本类型的MultipartBody.Part封装
+
+```
+/**
+ * 直接添加文本类型的Part到的MultipartBody的Part集合中
+ *
+ * @param parts Part集合
+ * @param key 参数名（name属性）
+ * @param value 文本内容
+ * @param position 插入的位置
+ */
+public static void addTextPart(List<MultipartBody.Part> parts,
+                              String key, String value, int position) {
+    RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), value);
+    MultipartBody.Part part = MultipartBody.Part.createFormData(key, null, requestBody);
+    parts.add(position, part);
+}
+
+/**
+ * 添加文本类型的Part到的MultipartBody.Builder中
+ *
+ * @param builder 用于构建MultipartBody的Builder
+ * @param key 参数名（name属性）
+ * @param value 文本内容
+ */
+public static MultipartBody.Builder addTextPart(MultipartBody.Builder builder,
+                                                String key, String value) {
+    RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), value);
+    // MultipartBody.Builder的addFormDataPart()有一个直接添加key value的重载，但坑的是这个方法
+    // 不会设置编码类型，会出乱码，所以可以使用3个参数的，将中间的filename置为null就可以了
+    // builder.addFormDataPart(key, value);
+    // 还有一个坑就是，后台取数据的时候有可能是有顺序的，比如必须先取文本后取文件，
+    // 否则就取不到（真弱啊...），所以还要注意add的顺序
+    builder.addFormDataPart(key, null, requestBody);
+    return builder;
+}
+```
+
+> 转载请注明出处：[Retrofit2文件上传](/2016/07/11/android_Retrofit2_files_upload)
