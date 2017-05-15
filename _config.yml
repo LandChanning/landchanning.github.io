@@ -11,7 +11,7 @@ baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 
 # SNS settings
-RSS: true
+RSS: false
 weibo_username:     channingsu
 zhihu_username:     landchanning
 github_username:    landchanning
@@ -59,7 +59,7 @@ duoshuo_share: false                     # set to false if you want to use Comme
 
 # Analytics settings
 # Baidu Analytics
-ba_track_id: 4cc1f2d8f3067386cc5cdb626a202900
+ba_track_id:                            # 4cc1f2d8f3067386cc5cdb626a202900
 # Google Analytics
 ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
 ga_domain: huangxuan.me
