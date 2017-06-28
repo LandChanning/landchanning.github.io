@@ -23,6 +23,6 @@ android 4.4 以下：正常显示content、drawer layout的nav，不被StatusBar
 android 4.4 ：StatusBar全透明，content、drawer layout的nav不被遮挡。
 
 ![sdk_18](/img/in-post/20170610/sdk_21.png)![sdk_18_open_drawer](/img/in-post/20170610/sdk_21_open_drawer.png)
-android 4.4 以上：Material Design效果，状态栏颜色为colorPrimaryDark同时覆盖半透明效果，content、drawer layout的nav不被遮挡。
+android 4.4 以上：Material Design效果，状态栏颜色为colorPrimaryDark同时覆盖半透明效果，content、drawer layout的nav不被遮挡。（该效果在使用NavigationView作为DrawerLayout的nav时才会出现，使用别的View做nav不能出现半透明StatusBar，发现一篇说这个的，具体情况待实现http://www.jianshu.com/p/ab937c80ed6e）
 
 # 适配方式一：Style 配合 android:fitsSystemWindows
