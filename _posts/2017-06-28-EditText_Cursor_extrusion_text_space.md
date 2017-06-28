@@ -42,6 +42,6 @@ protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 }
 ```
 
-![extrusion](/img/in-post/20170628/resolved.png)
+![resolved](/img/in-post/20170628/resolved.png)
 
 注：因为控件中 EditText 没有背景，宽度并不需要精确，所以可以这么干。一般情况只需要将 layout_width 设置为 match_parent 或固定值就可以解决这个问题。
