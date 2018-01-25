@@ -105,7 +105,7 @@ I/chromium: [INFO:CONSOLE(4)] "document.documentElement.clientWidth = 360 (layou
 
 #### chrome
 
-![chrome](/img/in-post/20180125/no_viewport_chrome.png)
+![chrome](/img/in-post/20180125/no_viewport_chrome.jpg)
 
 在 chrome 模拟器中，layout viewport（布局视口） 980。100% 宽度的实际值也被设置为 980，页面被自动缩小到 visual viewport（视觉视口）的范围内，没有出现横向滚动条。body 标签解析完毕后，srollWidth 的值也被指定 980。据说在 iOS 中，如果不指定 viewport，页面就会自动缩小适应屏幕（没有测试机所以没试）。
 
@@ -118,7 +118,7 @@ I/chromium: [INFO:CONSOLE(4)] "document.documentElement.clientWidth = 360 (layou
 
 ##### useWideViewPort = false（也是默认值）
 
-![WebView](/img/in-post/20180125/no_viewport_webview_false.png)
+![WebView](/img/in-post/20180125/no_viewport_webview_false.jpg)
 
 ```
 I/chromium: [INFO:CONSOLE(7)] "------------------------before viewport------------------------"
@@ -143,7 +143,7 @@ I/chromium: [INFO:CONSOLE(7)] "document.body.scrollWidth = 800”
 
 ##### useWideViewPort = true
 
-![WebView](/img/in-post/20180125/no_viewport_webview_true.png)
+![WebView](/img/in-post/20180125/no_viewport_webview_true.jpg)
 
 ```
 I/chromium: [INFO:CONSOLE(7)] "------------------------before viewport------------------------"
@@ -170,7 +170,7 @@ I/chromium: [INFO:CONSOLE(7)] "document.body.scrollWidth = 980"
 
 然后我们在 header 中加上 ```<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/> ```标签。这个写法也是绝大多数文章中提到的“这是标准写法这样写就好了哪那么多为什么”的推荐写法。我们看看加上后会出现什么情况。
 
-![WebView](/img/in-post/20180125/normal_viewport_chrome.png)
+![WebView](/img/in-post/20180125/normal_viewport_chrome.jpg)
 
 ![why](/img/in-post/20180125/why.jpg)
 
@@ -218,7 +218,7 @@ $(function(){
 
 这样应该就满足需求了，不敢把话说满，Web 的坑一样不少。有兴趣的同学可以跑下 smaple，也可以稍微关注下变来变去的 window.innerWidth。
 
-![why](/img/in-post/20180125/done.png)
+![why](/img/in-post/20180125/done.jpg)
 
 ```
 I/chromium: [INFO:CONSOLE(5)] "------------------------before viewport------------------------"
