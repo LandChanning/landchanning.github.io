@@ -11,7 +11,7 @@ tags:
     - JavaScript
 ---
 
-在做邮件页面适配时使用到了 viewport，都是照猫画虎用的，基本没有了解，所以写了个 sample 仔细研究了下 Viewport。测试用的设备是红米 note 4X（基于Android 7.0 的 miui） 和 mac 版的 chrome。以下所有宽度的单位都是 px（百分比除外）。
+在做邮件页面适配时使用到了 viewport，都是照猫画虎用的，基本没有了解，所以写了个 [sample](https://github.com/LandChanning/WebViewTest) 仔细研究了下 Viewport。测试用的设备是红米 note 4X（基于Android 7.0 的 miui） 和 mac 版的 chrome。以下所有宽度的单位都是 px（百分比除外）。
 
 ## 看完资料有点懵
 
@@ -263,3 +263,7 @@ I/chromium: [INFO:CONSOLE(20)] "window.devicePixelRatio = 3"
 I/chromium: [INFO:CONSOLE(21)] "document.documentElement.scrollWidth = 800"
 I/chromium: [INFO:CONSOLE(22)] "document.body.scrollWidth = 800"
 ```
+
+Sample 地址：[https://github.com/LandChanning/WebViewTest](https://github.com/LandChanning/WebViewTest)
+
+转载请注明出处
