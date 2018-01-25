@@ -113,7 +113,7 @@ I/chromium: [INFO:CONSOLE(4)] "document.documentElement.clientWidth = 360 (layou
 
 #### WebView
 
-有人说这只是模拟器啊，真机中会怎样呢？OK，上真~~鸡~~机！
+有人说这只是模拟器啊，真机中会怎样呢？OK，上真<S>鸡</S>机！
 在移动端（红米 Note 4X）的WebView 中，以相关性最高的设置 WebSetting.setUseWideViewPort() 分为两种情况。
 
 ##### useWideViewPort = false（也是默认值）
