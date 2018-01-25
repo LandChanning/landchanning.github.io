@@ -186,7 +186,7 @@ meta viewport 标签之前，layout viewport 宽度是浏览器默认的（大�
 
 ### 用 JS 控制 initial-scale
 
-对于需求来说，理性的情况是页面最宽的元素都在屏幕内，body 的 100% 即是最宽的宽度。思路就是使用 JS 控制 initial-scale 的值：initial-scale = visualViewportWidth / bodyWidth。（为什么不用 visualViewportWidth / layoutViewportWidth？因为有要绝对像素的熊孩子啊）bodyWidth 好拿，visual viewport width 怎么取到呢？
+对于需求来说，理想的情况是页面最宽的元素都在屏幕内，body 的 100% 即是最宽的宽度。思路就是使用 JS 控制 initial-scale 的值：initial-scale = visualViewportWidth / bodyWidth。（为什么不用 visualViewportWidth / layoutViewportWidth？因为有要绝对像素的熊孩子啊）bodyWidth 好拿，visual viewport width 怎么取到呢？
 
 我的思路是先写明 initial-scale = 1，此时两个视口的宽度肯定相当了，然后我们就可以用 document.documentElement.clientWidth 获取到 visual viewport width 了，贴一下 JS 代码（用了 jquery，代码很简单，一堆都是 log）。（为了避免某些奇葩浏览器找茬，minimum-scale 和 maximum-scale 还是都写上的好）
 
