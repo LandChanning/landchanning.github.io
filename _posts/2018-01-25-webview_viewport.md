@@ -15,7 +15,7 @@ tags:
 
 ## 看完资料有点懵
 
-在看![两个viewport的故事](https://www.quirksmode.org/mobile/viewports.html)时了解到，Layout Viewport（布局视口）的宽度可用document.documentElement.clientWidth 属性获取，Visual Viewport（视觉视口）可用 window.innerWidth 属性获取。但是在使用读信页模版 log 出来，这俩值都是一样的，不光这俩值，其它的宽度大部分都是一样全是360。
+在看[两个viewport的故事](https://www.quirksmode.org/mobile/viewports.html)时了解到，Layout Viewport（布局视口）的宽度可用document.documentElement.clientWidth 属性获取，Visual Viewport（视觉视口）可用 window.innerWidth 属性获取。但是在使用读信页模版 log 出来，这俩值都是一样的，不光这俩值，其它的宽度大部分都是一样全是360。
 
 ```
 I/chromium: [INFO:CONSOLE(2)] "screen.width = 360"
