@@ -24,7 +24,7 @@ tags:
 
 万能的反射搞定它。反射代码毕竟简单，就不解释了。
 
-```kotlin
+```
 try {
     val decorView = window.decorView
     val field = decorView::class.java.getDeclaredField("mSemiTransparentStatusBarColor")
